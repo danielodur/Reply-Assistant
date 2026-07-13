@@ -1,0 +1,46 @@
+# Project-local Codex metadata for Business Reply Assistant.
+# This file is intentionally conservative: it records paths and commands for
+# agents, but it does not change runtime behavior.
+
+[project]
+name = "Business Reply Assistant"
+root_instructions = "AGENTS.md"
+architecture_context = "AI_ARCHITECTURE_CONTEXT.md"
+codex_plan = [
+  ".codex/PROJECT_BRIEF.md",
+  ".codex/DEVELOPMENT_PLAN.md",
+  ".codex/FEATURE_GUARDS.md",
+  ".codex/CHANGELOG.md",
+  ".codex/HANDOFF.md"
+]
+agents_dir = "agents"
+skills_dir = ".agents/skills"
+
+[runtime]
+frontend = "apps/web"
+api = "apps/api"
+electron = "electron"
+desktop_web_port = 5190
+desktop_api_port = 4011
+browser_api_port = 4000
+
+[commands]
+dev = "npm run dev"
+desktop_dev = "npm run desktop:dev"
+web_build = "npm run build --workspace=apps/web"
+electron_build = "npm run electron:build"
+full_build = "npm run build"
+
+[invariants]
+local_first_contacts = true
+supabase_for_identity_and_telemetry_only = true
+no_fake_platform_integrations = true
+selected_contact_must_be_explicit = true
+generated_evidence_must_be_grounded = true
+
+[planning_protocol]
+update_after_approved_change = true
+preserve_shipped_features = true
+append_changelog_entries = true
+keep_agent_profiles_in_sync = true
+avoid_context_truncation = true

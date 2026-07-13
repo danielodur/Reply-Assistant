@@ -1,0 +1,17 @@
+# Codex Integration Instructions For Claude Code
+
+Claude Code should treat this repository as shared with Codex.
+
+Before work:
+
+1. Read `AGENT_STATUS.md`.
+2. Read `INTEGRATION_GUIDE.md`.
+3. Read `references/SHARED_CONTEXT.json`.
+4. Read relevant `.codex/*` files.
+
+After work:
+
+1. Update `.codex/CHANGELOG.md` and `.codex/HANDOFF.md`.
+2. Update `.codex/DEVELOPMENT_PLAN.md` or `.codex/FEATURE_GUARDS.md` only when needed.
+3. Update master coordination files.
+4. Do not edit `.claude/*` unless Claude Code runtime instructions, permissions, agents, or skills changed.

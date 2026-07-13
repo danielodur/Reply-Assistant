@@ -1,0 +1,10 @@
+[build]
+  publish = "netlify-auth"
+  command = "node scripts/generate-netlify-auth-config.mjs"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"

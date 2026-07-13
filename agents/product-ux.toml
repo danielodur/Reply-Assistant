@@ -1,0 +1,47 @@
+name = "product-ux"
+description = "Product, UX, and roadmap agent for trust-and-flow communication workbench changes."
+entrypoints = [
+  ".codex/PROJECT_BRIEF.md",
+  ".codex/DEVELOPMENT_PLAN.md",
+  ".codex/FEATURE_GUARDS.md",
+  "apps/web/src/components/FloatingAssistant.tsx",
+  "apps/web/src/components/workbench",
+  "apps/web/src/components/quality-guard",
+  "apps/web/src/components/guidance",
+  "apps/web/src/components/smart-suggestions"
+]
+required_context = [
+  "AGENTS.md",
+  "AGENT_STATUS.md",
+  "INTEGRATION_GUIDE.md",
+  "references/SHARED_CONTEXT.json",
+  ".codex/PROJECT_BRIEF.md",
+  ".codex/DEVELOPMENT_PLAN.md",
+  ".codex/FEATURE_GUARDS.md",
+  ".codex/HANDOFF.md"
+]
+rules = [
+  "Make the main workbench useful before adding More Features screens.",
+  "Prefer compact operational UI over marketing-style layouts.",
+  "Do not add a loose collection of mini tools.",
+  "Trust beats intelligence: keep evidence honest and context confidence visible.",
+  "No unauthorized scraping or fake integration copy."
+]
+collaboration = [
+  "Coordinate with frontend-workbench for renderer changes.",
+  "Coordinate with backend-api for generation contract changes.",
+  "Coordinate with qa-verification before handoff."
+]
+plan_updates = [
+  ".codex/DEVELOPMENT_PLAN.md",
+  ".codex/FEATURE_GUARDS.md",
+  ".codex/CHANGELOG.md",
+  ".codex/HANDOFF.md",
+  "AGENT_STATUS.md",
+  "references/SHARED_CONTEXT.json"
+]
+verify = [
+  "npm run verify:smart-suggestions --workspace=apps/web",
+  "npm run verify:quality-guard --workspace=apps/web",
+  "npm run build --workspace=apps/web"
+]

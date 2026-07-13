@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reply Assistant — Link error</title>
+    <link rel="stylesheet" href="./shared.css" />
+    <script src="./shared.js"></script>
+  </head>
+  <body>
+    <div class="card">
+      <div class="card-content">
+        <button type="button" class="lang-toggle" id="lang-toggle"></button>
+        <div class="logo" aria-hidden="true"><span class="logo-inner">RA</span></div>
+        <h1 id="title"></h1>
+        <p id="body"></p>
+        <a class="link btn-primary" id="back" href="reply-assistant://auth/callback" style="display:inline-block;margin-top:8px;"></a>
+      </div>
+    </div>
+    <script>
+      const { t, parseHashParams, parseSearchParams, mountLanguageToggle } = window.AuthPages;
+      const hash = parseHashParams();
+      const search = parseSearchParams();
+      const detail =
+        hash.get('error_description') ||
+        search.get('error_description') ||
+        hash.get('error') ||
+        search.get('error');
+
+      function renderError() {
+        document.getElementById('title').textContent = t('errorTitle');
+        document.getElementById('body').textContent = detail || t('errorBody');
+        document.getElementById('back').textContent = t('backToApp');
+      }
+
+      mountLanguageToggle('lang-toggle', renderError);
+      renderError();
+    </script>
+  </body>
+</html>

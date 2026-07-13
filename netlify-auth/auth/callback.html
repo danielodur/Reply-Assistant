@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reply Assistant — Auth</title>
+    <link rel="stylesheet" href="./shared.css" />
+    <script src="./config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./shared.js"></script>
+  </head>
+  <body>
+    <canvas id="fireworks" class="hidden"></canvas>
+    <div class="card">
+      <div class="card-content">
+        <button type="button" class="lang-toggle" id="lang-toggle"></button>
+        <div class="logo" aria-hidden="true"><span class="logo-inner">RA</span></div>
+        <div id="state-loading">
+          <h1 id="title-loading"></h1>
+          <div class="spinner" aria-hidden="true"></div>
+        </div>
+        <div id="state-success" class="hidden">
+          <h1 id="title-success"></h1>
+          <p id="body-success"></p>
+          <button type="button" class="btn-primary" id="open-app"></button>
+          <p id="hint-success" style="margin-top: 14px; font-size: 11px;"></p>
+        </div>
+        <div id="state-error" class="hidden">
+          <h1 id="title-error"></h1>
+          <p id="body-error"></p>
+          <a class="link" id="back-error" href="reply-assistant://auth/callback"></a>
+        </div>
+      </div>
+    </div>
+    <script>
+      (async function () {
+        const {
+          t,
+          createClient,
+          parseHashParams,
+          getAuthType,
+          getFlowPresentation,
+          buildDeepLink,
+          establishSession,
+          startFireworks,
+          routeAuthIfNeeded,
+          mountLanguageToggle,
+        } = window.AuthPages;
+
+        if (routeAuthIfNeeded('./')) return;
+
+        const loading = document.getElementById('state-loading');
+        const success = document.getElementById('state-success');
+        const error = document.getElementById('state-error');
+        const type = getAuthType();
+
+        let sessionRef = null;
+        let authType = type;
+        let errorMessage = '';
+        let openHandlerAttached = false;
+
+        function renderLoading() {
+          document.getElementById('title-loading').textContent = t(getFlowPresentation(authType, null).loadingKey);
+        }
+
+        function renderSuccess() {
+          if (!sessionRef) return;
+          const presentation = getFlowPresentation(authType, sessionRef.user);
+          document.getElementById('title-success').textContent = presentation.title;
+          document.getElementById('body-success').textContent = presentation.body;
+          document.getElementById('hint-success').textContent = t('openAppHint');
+          const openBtn = document.getElementById('open-app');
+          openBtn.textContent = t(presentation.buttonKey);
+          if (!openHandlerAttached) {
+            openBtn.addEventListener('click', () => {
+              window.location.href = buildDeepLink(sessionRef, authType);
+            });
+            openHandlerAttached = true;
+          }
+        }
+
+        function renderErrorState() {
+          document.getElementById('title-error').textContent = t('errorTitle');
+          document.getElementById('body-error').textContent = errorMessage || t('errorBody');
+          document.getElementById('back-error').textContent = t('backToApp');
+          document.getElementById('back-error').href = 'reply-assistant://auth/callback';
+        }
+
+        function refreshVisibleCopy() {
+          if (!loading.classList.contains('hidden')) {
+            renderLoading();
+            return;
+          }
+          if (!success.classList.contains('hidden')) {
+            renderSuccess();
+            return;
+          }
+          if (!error.classList.contains('hidden')) {
+            renderErrorState();
+          }
+        }
+
+        mountLanguageToggle('lang-toggle', refreshVisibleCopy);
+        renderLoading();
+
+        function showError(message) {
+          errorMessage = message || t('errorBody');
+          loading.classList.add('hidden');
+          success.classList.add('hidden');
+          error.classList.remove('hidden');
+          renderErrorState();
+        }
+
+        try {
+          const flow = getFlowPresentation(type, null);
+          if (flow.redirectToReset) {
+            window.location.replace(`./reset-password.html${window.location.search}${window.location.hash}`);
+            return;
+          }
+
+          const client = createClient();
+          const session = await establishSession(client);
+          if (!session) throw new Error(t('errorBody'));
+
+          sessionRef = session;
+          authType = type;
+          const presentation = getFlowPresentation(type, session.user);
+
+          loading.classList.add('hidden');
+          success.classList.remove('hidden');
+          renderSuccess();
+
+          if (presentation.fireworks) {
+            document.getElementById('fireworks').classList.remove('hidden');
+            startFireworks(document.getElementById('fireworks'));
+          }
+        } catch (err) {
+          const hash = parseHashParams();
+          const hashError = hash.get('error_description') || hash.get('error');
+          showError(hashError || err?.message || t('errorBody'));
+        }
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reply Assistant</title>
+    <script>
+      (function () {
+        var hash = window.location.hash || '';
+        var search = window.location.search || '';
+        if (!hash && !search.includes('code=') && !search.includes('error=')) return;
+        var params = new URLSearchParams(hash.charAt(0) === '#' ? hash.slice(1) : hash);
+        var type = params.get('type') || '';
+        if (params.get('error') || params.get('error_code') || search.includes('error=')) {
+          window.location.replace('./auth/error.html' + search + hash);
+          return;
+        }
+        if (type === 'recovery') {
+          window.location.replace('./auth/reset-password.html' + search + hash);
+          return;
+        }
+        if (params.get('access_token') || search.includes('code=')) {
+          window.location.replace('./auth/callback.html' + search + hash);
+        }
+      })();
+    </script>
+    <link rel="stylesheet" href="./auth/shared.css" />
+    <style>
+      .hero-glow {
+        position: absolute;
+        inset: -40% -20% auto;
+        height: 220px;
+        background: radial-gradient(circle at 50% 50%, rgba(239, 93, 143, 0.18), transparent 70%);
+        pointer-events: none;
+      }
+
+      .footnote {
+        margin-top: 14px;
+        font-size: 11px;
+        color: #9a8a90;
+      }
+    </style>
+    <script src="./auth/config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./auth/shared.js"></script>
+  </head>
+  <body>
+    <div class="card">
+      <div class="hero-glow" aria-hidden="true"></div>
+      <div class="card-content">
+        <button type="button" class="lang-toggle" id="lang-toggle"></button>
+        <div class="logo" aria-hidden="true"><span class="logo-inner">RA</span></div>
+        <h1 id="title"></h1>
+        <p id="subtitle"></p>
+        <button type="button" class="btn-primary" id="open-app"></button>
+        <p class="footnote" id="footnote"></p>
+      </div>
+    </div>
+    <script>
+      (function () {
+        const { t, routeAuthIfNeeded, buildAppDeepLinkWithoutSession, hasAuthPayload, mountLanguageToggle } =
+          window.AuthPages;
+
+        if (routeAuthIfNeeded('./')) return;
+
+        let openHandlerAttached = false;
+
+        function renderLanding() {
+          document.getElementById('title').textContent = t('landingTitle');
+          document.getElementById('subtitle').textContent = t('landingSubtitle');
+          document.getElementById('footnote').textContent = t('landingFootnote');
+          const openBtn = document.getElementById('open-app');
+          openBtn.textContent = t('landingOpenApp');
+          if (!openHandlerAttached) {
+            openBtn.addEventListener('click', () => {
+              window.location.href = buildAppDeepLinkWithoutSession();
+            });
+            openHandlerAttached = true;
+          }
+        }
+
+        mountLanguageToggle('lang-toggle', renderLanding);
+
+        if (!hasAuthPayload()) {
+          renderLanding();
+        }
+      })();
+    </script>
+  </body>
+</html>

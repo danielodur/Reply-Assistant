@@ -1,0 +1,49 @@
+{
+  "name": "business-reply-assistant-web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "npm run verify:contact-selection && vite build",
+    "preview": "vite preview",
+    "verify:contact-selection": "node scripts/verify-contact-selection.mjs",
+    "verify:cmd-k": "node scripts/verify-cmd-k.mjs",
+    "verify:smart-suggestions": "node scripts/verify-smart-suggestions.mjs",
+    "verify:next-step": "node scripts/verify-next-step.mjs",
+    "verify:smart-reply": "node scripts/verify-smart-reply.mjs",
+    "verify:cross-language": "node scripts/verify-cross-language.mjs",
+    "verify:draft-language-toggle": "node scripts/verify-draft-language-toggle.mjs",
+    "verify:contact-onboarding": "node scripts/verify-contact-onboarding.mjs",
+    "verify:quality-guard": "node scripts/verify-quality-guard.mjs",
+    "verify:notifications": "node scripts/verify-notifications.mjs",
+    "verify:guided-tour": "node scripts/verify-guided-tour.mjs",
+    "verify:sales-scenarios": "node scripts/verify-sales-scenarios.mjs",
+    "verify:auth": "node --experimental-strip-types scripts/verify-auth.mjs",
+    "verify:help-center": "node scripts/verify-help-center.mjs",
+    "verify:relationship-memory": "node scripts/verify-relationship-memory.mjs",
+    "verify:compose-coach": "node scripts/verify-compose-coach.mjs",
+    "verify:intent": "node scripts/verify-intent.mjs",
+    "verify:rewrite-modes": "node scripts/verify-rewrite-modes.mjs",
+    "verify:follow-ups": "node scripts/verify-follow-ups.mjs",
+    "verify:voice-profile": "node scripts/verify-voice-profile.mjs",
+    "verify:focus-plan": "node --experimental-strip-types scripts/verify-focus-plan.ts",
+    "verify:contact-continuity": "node scripts/verify-contact-continuity.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.106.2",
+    "libphonenumber-js": "^1.12.9",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.0.0",
+    "autoprefixer": "^10.4.0",
+    "postcss": "^8.4.0",
+    "tailwindcss": "^3.0.0",
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0"
+  }
+}

@@ -1,0 +1,54 @@
+# ── Dependencies ──────────────────────────────────────────────────────────────
+node_modules/
+.pnp
+.pnp.js
+
+# ── Environment / Secrets ─────────────────────────────────────────────────────
+# NEVER commit real API keys. Use .env.example as the safe reference template.
+.env
+.env.local
+.env.*.local
+apps/api/.env
+apps/web/.env
+apps/web/.env.local
+electron/.env
+
+# ── Build outputs ─────────────────────────────────────────────────────────────
+dist/
+dist-electron/
+build/
+out/
+apps/web/dist/
+apps/api/dist/
+
+# ── Electron packager output ──────────────────────────────────────────────────
+release/
+release-builds/
+
+# ── TypeScript ────────────────────────────────────────────────────────────────
+*.tsbuildinfo
+
+# ── Logs ─────────────────────────────────────────────────────────────────────
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ── OS ────────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Editor ────────────────────────────────────────────────────────────────────
+.vscode/settings.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# ── Supabase local ────────────────────────────────────────────────────────────
+supabase/.temp/
+
+# ── Netlify auth (generated from env) ─────────────────────────────────────────
+netlify-auth/auth/config.js

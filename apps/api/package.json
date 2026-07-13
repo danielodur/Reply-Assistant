@@ -1,0 +1,25 @@
+{
+  "name": "business-reply-assistant-api",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node src/server.js",
+    "verify:cross-language-fragment": "node scripts/verify-cross-language-fragment.mjs",
+    "verify:translate-draft-fragment": "node scripts/verify-translate-draft-fragment.mjs",
+    "verify:voice-profile-fragment": "node scripts/verify-voice-profile-fragment.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.57.4",
+    "cors": "^2.8.6",
+    "dotenv": "^16.6.1",
+    "express": "^4.18.0",
+    "imapflow": "^1.3.2",
+    "keytar": "^7.9.0",
+    "mailparser": "^3.9.8"
+  },
+  "devDependencies": {
+    "pg": "^8.21.0",
+    "typescript": "^5.0.0"
+  }
+}

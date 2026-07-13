@@ -1,0 +1,38 @@
+name = "qa-verification"
+description = "Verification and regression agent for targeted scripts, builds, and desktop smoke checks."
+entrypoints = [
+  "package.json",
+  "apps/web/package.json",
+  "apps/api/package.json",
+  "scripts",
+  "apps/web/scripts",
+  "apps/api/scripts"
+]
+required_context = [
+  "AGENTS.md",
+  "AGENT_STATUS.md",
+  "INTEGRATION_GUIDE.md",
+  "references/SHARED_CONTEXT.json",
+  "AI_ARCHITECTURE_CONTEXT.md",
+  ".codex/DEVELOPMENT_PLAN.md",
+  ".codex/FEATURE_GUARDS.md",
+  ".codex/HANDOFF.md"
+]
+rules = [
+  "Run the narrowest relevant verify script first.",
+  "Run web build for renderer or shared frontend changes.",
+  "Run API fragment verifiers when prompt fragments or generation normalization changes.",
+  "Run electron build for Electron or preload changes.",
+  "Report any command that could not be run."
+]
+plan_updates = [
+  ".codex/CHANGELOG.md",
+  ".codex/HANDOFF.md",
+  "AGENT_STATUS.md",
+  "references/SHARED_CONTEXT.json"
+]
+verify = [
+  "npm run build --workspace=apps/web",
+  "npm run electron:build",
+  "npm run build"
+]

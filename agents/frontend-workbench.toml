@@ -1,0 +1,48 @@
+name = "frontend-workbench"
+description = "React/Vite/Electron renderer agent for the Floating Assistant workbench."
+entrypoints = [
+  "apps/web/src/components/FloatingAssistant.tsx",
+  "apps/web/src/components/workbench",
+  "apps/web/src/components/floating-assistant/state",
+  "apps/web/src/components/command-center",
+  "apps/web/src/components/more-features.tsx",
+  "apps/web/src/components/more-features"
+]
+required_context = [
+  "AGENTS.md",
+  "AGENT_STATUS.md",
+  "INTEGRATION_GUIDE.md",
+  "references/SHARED_CONTEXT.json",
+  ".codex/PROJECT_BRIEF.md",
+  ".codex/DEVELOPMENT_PLAN.md",
+  ".codex/FEATURE_GUARDS.md",
+  ".codex/HANDOFF.md",
+  "AI_ARCHITECTURE_CONTEXT.md"
+]
+rules = [
+  "Keep FloatingAssistant.tsx orchestration-focused.",
+  "Put new transient workbench state in existing floating-assistant state hooks or a focused sibling hook.",
+  "Preserve explicit selected-contact behavior and paste confirmation.",
+  "Keep one primary next-step cue active at a time.",
+  "Preserve More Features drawer close geometry and Electron panel timing from .codex/FEATURE_GUARDS.md.",
+  "Preserve Focus Plan and remembered-context transparent right-side popover contracts.",
+  "Use the existing feature folders before adding new top-level screens.",
+  "Add English and Chinese i18n keys together for user-visible text."
+]
+plan_updates = [
+  ".codex/CHANGELOG.md",
+  ".codex/HANDOFF.md",
+  ".codex/DEVELOPMENT_PLAN.md",
+  ".codex/FEATURE_GUARDS.md",
+  "AGENT_STATUS.md",
+  "references/SHARED_CONTEXT.json"
+]
+verify = [
+  "npm run verify:contact-selection --workspace=apps/web",
+  "npm run verify:contact-continuity --workspace=apps/web",
+  "npm run verify:focus-plan --workspace=apps/web",
+  "npm run verify:compose-coach --workspace=apps/web",
+  "npm run verify:next-step --workspace=apps/web",
+  "npm run build --workspace=apps/web",
+  "npm run electron:build"
+]

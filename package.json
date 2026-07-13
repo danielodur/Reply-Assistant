@@ -1,0 +1,75 @@
+{
+  "name": "business-reply-assistant",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist-electron/main.js",
+  "description": "Multilingual, workflow-driven communication assistant for business professionals",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:web\" \"npm run dev:api\"",
+    "dev:web": "VITE_API_PROXY_TARGET=http://localhost:4000 npm run dev --workspace=apps/web",
+    "dev:api": "npm run dev --workspace=apps/api",
+    "predev:web:desktop": "kill-port 5190 || true",
+    "dev:web:desktop": "VITE_API_PROXY_TARGET=http://localhost:4011 npm run dev --workspace=apps/web -- --port 5190 --strictPort",
+    "predev:api:desktop": "kill-port 4011 || true",
+    "dev:api:desktop": "PORT=4011 npm run dev --workspace=apps/api",
+    "predesktop:dev": "kill-port 5190 4011 || true",
+    "desktop:dev": "concurrently \"npm run dev:web:desktop\" \"npm run dev:api:desktop\" \"npm run electron:watch\" \"wait-on tcp:5190 file:dist-electron/main.js && ELECTRON_RENDERER_URL=http://localhost:5190 electron dist-electron/main.js\"",
+    "electron:watch": "tsc -p electron/tsconfig.json --watch",
+    "electron:build": "npm run verify:child-window-layout && tsc -p electron/tsconfig.json",
+    "build:web": "npm run build --workspace=apps/web",
+    "build:electron": "npm run electron:build",
+    "build": "npm run build:web && npm run build:electron",
+    "verify:child-window-layout": "node scripts/verify-child-window-layout.mjs",
+    "agents:validate": "node scripts/validate-plans.js",
+    "agents:status": "node scripts/generate-status-report.js",
+    "agents:sync": "node scripts/sync-agents.js",
+    "supabase:migrate": "node scripts/apply-supabase-migrations.mjs",
+    "netlify-auth:config": "node scripts/generate-netlify-auth-config.mjs",
+    "desktop:pack": "npm run build && electron-builder",
+    "preview": "npm run preview --workspace=apps/web"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "concurrently": "^8.2.0",
+    "electron": "^41.2.1",
+    "electron-builder": "^26.8.1",
+    "kill-port": "^2.0.1",
+    "typescript": "^6.0.3",
+    "wait-on": "^9.0.5"
+  },
+  "build": {
+    "appId": "com.businessreplyassistant.app",
+    "productName": "Business Reply Assistant",
+    "files": [
+      "dist-electron/**/*",
+      "apps/web/dist/**/*",
+      "package.json"
+    ],
+    "mac": {
+      "target": "dmg",
+      "category": "public.app-category.productivity",
+      "protocols": [
+        {
+          "name": "Reply Assistant Auth",
+          "schemes": ["reply-assistant"]
+        }
+      ]
+    },
+    "win": {
+      "target": "nsis",
+      "protocols": [
+        {
+          "name": "Reply Assistant Auth",
+          "schemes": ["reply-assistant"]
+        }
+      ]
+    },
+    "directories": {
+      "output": "release"
+    }
+  }
+}

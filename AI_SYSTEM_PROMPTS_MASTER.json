@@ -1,0 +1,156 @@
+{
+  "schemaVersion": "2026-05-25",
+  "purpose": "Central registry for the app's AI generation prompts and prompt sections. Runtime source still lives in apps/api/src/server.js, apps/api/src/contactThreadPrompt.js, and apps/api/src/memoryPrompt.js until the app is refactored to import this file directly.",
+  "runtimeSourceOfTruth": {
+    "buildMessages": "apps/api/src/server.js",
+    "contactThreadSection": "apps/api/src/contactThreadPrompt.js",
+    "memorySections": "apps/api/src/memoryPrompt.js",
+    "requestNormalization": "apps/api/src/generateContract.js",
+    "replyIntelligence": "apps/api/src/replyIntelligence.js"
+  },
+  "generation": {
+    "systemPrompt": {
+      "id": "reply_assistant.primary.system",
+      "role": "system",
+      "content": "You are Reply Assistant, a professional sales communication copilot. Generate one polished, practical message that is ready to send. Keep the response concise, specific, and action-oriented. CRITICAL: Never use bracket placeholders like [Your Name], [Your Position], [Name], or similar. Always use the real values from Business Context. Use memory carefully: preserve continuity from recent replies, reuse snippet ideas only when they fit, and adapt everything to the current request instead of sounding templated. Do not include explanations or analysis unless explicitly requested."
+    },
+    "userPromptTemplate": {
+      "id": "reply_assistant.primary.user",
+      "role": "user",
+      "sectionsInOrder": [
+        "Mode",
+        "Recipient",
+        "Text Type",
+        "Language",
+        "Tone",
+        "Business Context",
+        "Contact Thread Context",
+        "Recent Reply Memory",
+        "Reusable Snippets",
+        "Generation Context",
+        "User Input",
+        "Signature Instruction",
+        "Return only the final message body."
+      ],
+      "template": "Mode: {{mode}}\nRecipient: {{recipient}}\nText Type: {{textType}}\nLanguage: {{language}}\nTone: formality {{tone.formality}}/5, warmth {{tone.warmth}}/5, urgency {{tone.urgency}}/5, confidence {{tone.confidence}}/5\nBusiness Context:\n{{businessContextSection}}\nContact Thread Context:\n{{contactThreadSection}}\nRecent Reply Memory:\n{{recentReplyMemorySection}}\nReusable Snippets:\n{{snippetMemorySection}}\nGeneration Context:\n{{generationContextSection}}\nUser Input:\n{{rawInput}}\n{{signatureInstruction}}\nReturn only the final message body."
+    },
+    "providerRequestDefaults": {
+      "endpointPattern": "{{baseUrl}}/chat/completions",
+      "method": "POST",
+      "temperature": 0.6,
+      "timeoutMs": 25000,
+      "messageFormat": "OpenAI-compatible chat/completions"
+    }
+  },
+  "promptSections": {
+    "businessContextSection": {
+      "source": "apps/api/src/server.js",
+      "fieldsInOrder": [
+        "Sender Name",
+        "Company",
+        "Sender Position",
+        "Industry",
+        "Products/Services",
+        "Brand Voice",
+        "Common Objections",
+        "Do Not Say"
+      ],
+      "emptyValue": "None"
+    },
+    "contactThreadSection": {
+      "source": "apps/api/src/contactThreadPrompt.js",
+      "fieldsInOrder": [
+        "Contact",
+        "Company",
+        "Email",
+        "Stage",
+        "Notes",
+        "Relationship memory",
+        "Chat history (legacy/freeform)",
+        "Recent timeline (newest first)",
+        "Recent generated reply previews"
+      ],
+      "closingInstruction": "Use this thread context to avoid repeating yourself, maintain continuity, and write as if this relationship already exists."
+    },
+    "recentReplyMemorySection": {
+      "source": "apps/api/src/memoryPrompt.js",
+      "maxItems": 5,
+      "closingInstruction": "Use this memory to maintain continuity, avoid repeating the same phrasing, and keep the user's usual working style consistent."
+    },
+    "snippetMemorySection": {
+      "source": "apps/api/src/memoryPrompt.js",
+      "maxItems": 5,
+      "closingInstruction": "Use snippets only when they genuinely fit the request. Adapt them naturally instead of copying them verbatim unless the user clearly wants template reuse."
+    },
+    "generationContextSection": {
+      "source": "apps/api/src/memoryPrompt.js",
+      "default": "Source: composer"
+    }
+  },
+  "signatureInstructions": {
+    "source": "apps/api/src/server.js",
+    "withoutSenderName": "Do NOT add any sign-off, signature, or closing line at the end. End the message body directly.",
+    "formalOrImportant": "End the message with a professional sign-off followed by a line break, then the sender signature on separate lines using available sender name, position, and company. Do NOT write [Your Name], [Your Position], or any bracket placeholders.",
+    "casualOrFriendly": "End the message with a warm sign-off followed by a line break, then the sender signature on separate lines using available sender name and company. Do NOT write [Your Name] or any bracket placeholders.",
+    "postProcessing": [
+      "replaceKnownPlaceholders",
+      "ensureSignatureBlock",
+      "postProcessGeneratedOutput",
+      "postProcessVariants"
+    ]
+  },
+  "replyVariants": {
+    "source": "apps/api/src/replyIntelligence.js",
+    "ids": [
+      "safe",
+      "assertive",
+      "strategic"
+    ],
+    "safe": "Minimizes friction while staying professional and clear.",
+    "assertive": "Adds a direct call-to-action to speed decisions.",
+    "strategic": "Frames business value and drives a concrete next step."
+  },
+  "replyInsight": {
+    "source": "apps/api/src/replyIntelligence.js",
+    "detectedIntents": [
+      "pricing_objection",
+      "timeline_slip",
+      "escalation_risk",
+      "renewal_risk",
+      "follow_up",
+      "general_reply"
+    ],
+    "riskLevels": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "outputs": [
+      "intent",
+      "intentLabel",
+      "riskLevel",
+      "nextAction",
+      "followUp",
+      "subjectLine"
+    ]
+  },
+  "guardrails": [
+    "Return only the final message body for primary generation.",
+    "Never emit bracket placeholders such as [Your Name] or [Your Position].",
+    "Use Business Context values when signing important/formal replies.",
+    "Do not copy snippets verbatim unless the user clearly requests template reuse.",
+    "Use contact thread context to maintain continuity and avoid repeated phrasing.",
+    "Do not invent facts, commitments, discounts, deadlines, or integrations not present in the request/context.",
+    "Do not include model analysis or explanation in generated business replies."
+  ],
+  "changePolicy": {
+    "whenEditingPrompts": [
+      "Update apps/api/src/server.js or the relevant prompt helper file.",
+      "Update this master prompt registry in the same change.",
+      "Run a web build or targeted API smoke test.",
+      "Check generated replies for placeholders and signature correctness."
+    ],
+    "futureRefactorOption": "The backend may later import this JSON as the actual prompt source, but it does not today."
+  }
+}
+

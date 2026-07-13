@@ -1,0 +1,48 @@
+name = "backend-api"
+description = "Express API and AI generation contract agent."
+entrypoints = [
+  "apps/api/src/server.js",
+  "apps/api/src/generateContract.js",
+  "apps/api/src/contactThreadPrompt.js",
+  "apps/api/src/memoryPrompt.js",
+  "apps/api/src/crossLanguageFragment.js",
+  "apps/api/src/voiceProfileFragment.js",
+  "API_INTEGRATION_CONTRACTS.md"
+]
+required_context = [
+  "AGENTS.md",
+  "AGENT_STATUS.md",
+  "INTEGRATION_GUIDE.md",
+  "references/SHARED_CONTEXT.json",
+  ".codex/PROJECT_BRIEF.md",
+  ".codex/DEVELOPMENT_PLAN.md",
+  ".codex/FEATURE_GUARDS.md",
+  ".codex/HANDOFF.md",
+  "AI_ARCHITECTURE_CONTEXT.md",
+  "API_INTEGRATION_CONTRACTS.md"
+]
+rules = [
+  "Do not change /api/generate shape without updating frontend, backend normalizer, docs, and tests together.",
+  "Do not add unsupported provider claims.",
+  "Keep prompt fragments modular and omission-safe.",
+  "Never hardcode secrets.",
+  "Do not fake OCR, sync, or platform API behavior."
+]
+collaboration = [
+  "Coordinate with frontend-workbench when request or response shape changes.",
+  "Coordinate with product-ux when prompt behavior changes visible user trust.",
+  "Coordinate with qa-verification for API and full-build checks."
+]
+plan_updates = [
+  ".codex/CHANGELOG.md",
+  ".codex/HANDOFF.md",
+  ".codex/DEVELOPMENT_PLAN.md",
+  ".codex/FEATURE_GUARDS.md",
+  "AGENT_STATUS.md",
+  "references/SHARED_CONTEXT.json"
+]
+verify = [
+  "npm run verify:cross-language-fragment --workspace=apps/api",
+  "npm run verify:voice-profile-fragment --workspace=apps/api",
+  "npm run build"
+]

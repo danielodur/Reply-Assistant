@@ -1,0 +1,442 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schemaVersion": "2026-05-29",
+  "sourceOfTruth": {
+    "contactThread": "apps/web/src/config/contactThreads.ts",
+    "generationRequest": "apps/web/src/components/workbench/requestModel.ts",
+    "generateResponse": "apps/web/src/components/workbench/generatedReplyTypes.ts",
+    "apiNormalizer": "apps/api/src/generateContract.js",
+    "supabaseTelemetry": "supabase/setup.sql",
+    "supabaseAuthPrep": "supabase/setup-auth-prep.sql",
+    "supabaseGrants": "supabase/grants.sql",
+    "supabaseFreshProjectGuide": "supabase/FRESH_PROJECT_SETUP.md"
+  },
+  "storage": {
+    "canonicalContacts": {
+      "type": "localStorage",
+      "key": "replyAssistantContactThreads",
+      "owner": "apps/web/src/config/contactThreads.ts"
+    },
+    "generatedReplyHistory": {
+      "type": "localStorage",
+      "owner": "apps/web/src/components/FloatingAssistant.tsx",
+      "maxItems": 12
+    },
+    "supabaseTablesAreTelemetryOnly": true,
+    "desktopLocalFirst": true,
+    "cloudBackupRequiresOptIn": "profiles.cloud_backup_opt_in"
+  },
+  "enums": {
+    "ContactStage": [
+      "new-lead",
+      "active-client",
+      "vip-client",
+      "follow-up",
+      "closed",
+      "internal"
+    ],
+    "ContactMessageDirection": [
+      "inbound",
+      "outbound",
+      "note"
+    ],
+    "ContactMessageSource": [
+      "paste",
+      "email-sync",
+      "manual-note",
+      "generated-reply"
+    ],
+    "ContactMessageFollowUpKind": [
+      "none",
+      "needs-reply",
+      "promise"
+    ],
+    "WorkMode": [
+      "reply",
+      "internal"
+    ],
+    "RecipientProfile": [
+      "new-lead",
+      "existing-client",
+      "vip-client",
+      "leader",
+      "colleague",
+      "others"
+    ],
+    "ReplyVariantId": [
+      "safe",
+      "assertive",
+      "strategic"
+    ],
+    "AiProvider": [
+      "deepseek",
+      "openai",
+      "zhipu",
+      "qwen",
+      "moonshot"
+    ],
+    "EmailSyncProvider": [
+      "imap",
+      "gmail-oauth",
+      "microsoft-oauth"
+    ],
+    "SocialSyncProvider": [
+      "telegram",
+      "whatsapp",
+      "dingtalk",
+      "wechat"
+    ]
+  },
+  "Contact": {
+    "description": "The app's exact contact object is ContactThread. There is no separate Contact model today. WhatsApp ID and DingTalk ID are not stored on ContactThread yet; they are represented only through social sync workspace/chat metadata.",
+    "canonicalTypeName": "ContactThread",
+    "required": [
+      "id",
+      "name",
+      "company",
+      "stage",
+      "notes",
+      "lastReplyAt",
+      "replies",
+      "messages",
+      "createdAt",
+      "updatedAt"
+    ],
+    "fields": {
+      "id": {
+        "type": "string",
+        "example": "contact-1710000000000"
+      },
+      "name": {
+        "type": "string",
+        "required": true
+      },
+      "company": {
+        "type": "string",
+        "default": ""
+      },
+      "email": {
+        "type": "string",
+        "optional": true,
+        "normalization": "trim and lowercase"
+      },
+      "whatsAppId": {
+        "type": "string",
+        "optional": true,
+        "status": "not currently persisted on ContactThread",
+        "currentAlternative": "social_sync_inbox.chat_id for provider=whatsapp; sync request uses syncConfig.phoneNumberId"
+      },
+      "dingTalkId": {
+        "type": "string",
+        "optional": true,
+        "status": "not currently persisted on ContactThread",
+        "currentAlternative": "social_sync_inbox.chat_id for provider=dingtalk; sync request uses syncConfig.appKey"
+      },
+      "stage": {
+        "$ref": "#/enums/ContactStage",
+        "default": "follow-up"
+      },
+      "notes": {
+        "type": "string",
+        "default": ""
+      },
+      "lastReplyAt": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "description": "Unix timestamp in milliseconds or null"
+      },
+      "replies": {
+        "type": "ContactReplyEntry[]",
+        "maxItems": 20
+      },
+      "messages": {
+        "type": "ContactMessageEntry[]",
+        "maxItems": 30,
+        "sort": "newest first"
+      },
+      "createdAt": {
+        "type": "number",
+        "description": "Unix timestamp in milliseconds"
+      },
+      "updatedAt": {
+        "type": "number",
+        "description": "Unix timestamp in milliseconds"
+      },
+      "chatContext": {
+        "type": "string",
+        "optional": true,
+        "description": "Merged freeform context derived from recent messages plus manual notes"
+      },
+      "memoryProfile": {
+        "type": "ContactMemoryProfile",
+        "optional": true
+      }
+    }
+  },
+  "ContactReplyEntry": {
+    "required": [
+      "id",
+      "preview",
+      "createdAt",
+      "mode",
+      "recipient"
+    ],
+    "fields": {
+      "id": {
+        "type": "string"
+      },
+      "preview": {
+        "type": "string"
+      },
+      "createdAt": {
+        "type": "number"
+      },
+      "mode": {
+        "$ref": "#/enums/WorkMode"
+      },
+      "recipient": {
+        "type": "string",
+        "usually": "RecipientProfile"
+      }
+    }
+  },
+  "ContactMessageEntry": {
+    "required": [
+      "id",
+      "direction",
+      "source",
+      "text",
+      "summary",
+      "createdAt",
+      "sender",
+      "receiver",
+      "followUpKind"
+    ],
+    "fields": {
+      "id": {
+        "type": "string"
+      },
+      "direction": {
+        "$ref": "#/enums/ContactMessageDirection"
+      },
+      "source": {
+        "$ref": "#/enums/ContactMessageSource"
+      },
+      "text": {
+        "type": "string"
+      },
+      "summary": {
+        "type": "string",
+        "maxLength": 120
+      },
+      "createdAt": {
+        "type": "number"
+      },
+      "sender": {
+        "type": "string"
+      },
+      "receiver": {
+        "type": "string"
+      },
+      "followUpKind": {
+        "$ref": "#/enums/ContactMessageFollowUpKind"
+      },
+      "followUpSummary": {
+        "type": "string",
+        "optional": true
+      }
+    }
+  },
+  "ContactMemoryProfile": {
+    "fields": {
+      "role": {
+        "type": "string",
+        "optional": true
+      },
+      "preferredLanguage": {
+        "type": "string",
+        "optional": true
+      },
+      "channelPreference": {
+        "type": "string",
+        "optional": true
+      },
+      "communicationStyle": {
+        "type": "string",
+        "optional": true,
+        "allowed": [
+          "",
+          "formal",
+          "warm",
+          "direct",
+          "concise"
+        ]
+      },
+      "recurringTopics": {
+        "type": "string",
+        "optional": true
+      },
+      "relationshipNotes": {
+        "type": "string",
+        "optional": true
+      }
+    }
+  },
+  "GeneratedMessage": {
+    "description": "Generated replies are represented by the API response plus frontend history/contact entries. There is not a separate persisted GeneratedMessage table.",
+    "apiResponseTypeName": "GenerateApiResponse",
+    "required": [
+      "output"
+    ],
+    "fields": {
+      "output": {
+        "type": "string",
+        "description": "Final message body ready to send"
+      },
+      "variants": {
+        "type": "ReplyVariant[]",
+        "optional": true
+      },
+      "insight": {
+        "type": "ReplyInsight",
+        "optional": true
+      },
+      "quickActions": {
+        "type": "ReplyQuickAction[]",
+        "optional": true
+      },
+      "providerUsed": {
+        "$ref": "#/enums/AiProvider",
+        "optional": true
+      },
+      "modelUsed": {
+        "type": "string",
+        "optional": true
+      },
+      "attempts": {
+        "type": "Array<{ provider: string; status: string; reason?: string }>",
+        "optional": true,
+        "returnedByBackend": true
+      }
+    },
+    "persistedAsReplyHistoryItem": {
+      "id": "string",
+      "preview": "string",
+      "variant": "balanced",
+      "mode": "reply | internal",
+      "recipient": "RecipientProfile",
+      "contactId": "string | undefined",
+      "contactName": "string | undefined",
+      "createdAt": "number"
+    },
+    "persistedAsContactReplyEntry": {
+      "$ref": "#/ContactReplyEntry"
+    },
+    "persistedAsContactMessageEntry": {
+      "direction": "outbound",
+      "source": "generated-reply",
+      "text": "reply.preview",
+      "sender": "You",
+      "receiver": "thread.name"
+    }
+  },
+  "GenerateApiRequest": {
+    "description": "Frontend sends StructuredRequest plus optional contactThread and preferredProvider. Backend normalizes again.",
+    "required": [
+      "mode",
+      "recipient",
+      "textType",
+      "language",
+      "tone",
+      "businessContext",
+      "rawInput",
+      "snippetMemory",
+      "recentReplies",
+      "generationContext"
+    ],
+    "fields": {
+      "mode": {
+        "$ref": "#/enums/WorkMode"
+      },
+      "recipient": {
+        "$ref": "#/enums/RecipientProfile"
+      },
+      "textType": {
+        "type": "string"
+      },
+      "language": {
+        "type": "string",
+        "examples": [
+          "English",
+          "Chinese (Simplified)"
+        ]
+      },
+      "tone": {
+        "type": "ToneControls",
+        "range": "1..5 for formality, warmth, urgency, confidence"
+      },
+      "businessContext": {
+        "type": "BusinessContext | null"
+      },
+      "rawInput": {
+        "type": "string",
+        "required": true
+      },
+      "snippetMemory": {
+        "type": "Array<{ title: string; text: string }>",
+        "maxItems": 5
+      },
+      "recentReplies": {
+        "type": "Array<{ preview: string; mode: WorkMode; recipient: RecipientProfile; contactName?: string }>",
+        "maxItems": 5
+      },
+      "generationContext": {
+        "type": "{ source: string; title?: string; body?: string } | null"
+      },
+      "contactThread": {
+        "type": "ContactThreadContext | null",
+        "optional": true
+      },
+      "preferredProvider": {
+        "$ref": "#/enums/AiProvider",
+        "optional": true
+      }
+    }
+  },
+  "SupabaseTelemetryTables": {
+    "ai_generation_logs": {
+      "purpose": "AI generation telemetry",
+      "canonicalContactStorage": false
+    },
+    "reply_generation_logs": {
+      "purpose": "Fallback AI generation telemetry",
+      "canonicalContactStorage": false
+    },
+    "email_sync_runs": {
+      "purpose": "Sync telemetry across email/social sync endpoints",
+      "canonicalContactStorage": false
+    },
+    "social_sync_inbox": {
+      "purpose": "Durable webhook/social message inbox for WhatsApp, DingTalk, WeChat, Telegram",
+      "canonicalContactStorage": false
+    },
+    "profiles": {
+      "purpose": "Supabase Auth user profile (display name, referral, opt-in flags)",
+      "canonicalContactStorage": false,
+      "sql": "supabase/setup-auth-prep.sql"
+    },
+    "desktop_installations": {
+      "purpose": "Optional desktop device binding per authenticated user",
+      "canonicalContactStorage": false,
+      "sql": "supabase/setup-auth-prep.sql"
+    }
+  },
+  "SupabaseTelemetryOptionalColumns": {
+    "user_id": "uuid references auth.users — null until Auth JWT wired in API",
+    "installation_id": "uuid references desktop_installations — null until device registration",
+    "cross_language": "jsonb on ai_generation_logs / reply_generation_logs — Phase 9 analytics"
+  }
+}
+

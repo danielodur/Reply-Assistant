@@ -1,0 +1,75 @@
+{
+  "lastUpdated": "2026-06-09",
+  "app": {
+    "name": "Business Reply Assistant",
+    "type": "local-first Electron communication workbench",
+    "primaryAudience": "Office workers, business professionals, sales people, and executives who handle work communication",
+    "corePromise": "Capture the message, understand the contact, draft the right reply, preserve memory, and surface the next action."
+  },
+  "architecture": {
+    "frontend": "React 18 + TypeScript + Vite + Tailwind in apps/web",
+    "api": "Express ESM API in apps/api",
+    "desktop": "Electron TypeScript in electron",
+    "localFirstStorage": [
+      "contacts",
+      "contact memory",
+      "drafts",
+      "selected contact",
+      "timelines",
+      "queues",
+      "recent replies",
+      "reply learning"
+    ]
+  },
+  "currentFocus": [
+    "Main workbench clarity",
+    "Contact continuity memory",
+    "Grounded reply generation",
+    "Secondary utility decluttering"
+  ],
+  "coordination": {
+    "codexCurrentTask": "No active task recorded in this workspace.",
+    "codexLastCompleted": "Coordination and continuation audit after the 2026-06-09 More Features drawer close polish. Directly inspected FloatingAssistant.tsx, more-features.tsx, more-features/*, electron/main.ts, Codex skills, Claude Code skill mirrors, and master plan/status files. Confirmed the current shipped More Features contract remains implemented: shared 300ms timing, 184px drawer width, fixed left-[390px] anchor, -translate-x-full close, invisible after hold, isMoreFeaturesVisible retained for React visual state only, no isMoreFeaturesClosing in setPanelOpen(true), and Electron's cancellable non-native 300ms shrink from 574px to 390px. Updated stale Claude-facing continuation guidance and frontend agent/skill guidance so future agents preserve More Features, Focus Plan, remembered-context, active TARGET row, and compose-coach implementations instead of recreating older variants. Guidance-only; no runtime app code, prompt, schema, storage, API, IPC, route, translation, or UI behavior changed. Verified: agents:validate and agents:status.",
+    "codexNextPriority": "Continue preserving the current shipped app contracts. After approved changes, update .codex files, Codex workflow files when needed, Claude runtime guidance only when explicitly relevant, and master coordination files.",
+    "codexBlockers": "Git metadata is not present in this workspace, so git status/diff cannot be used here.",
+    "claudeCurrentTask": "No active task recorded in this workspace.",
+    "claudeLastCompleted": "Focus Plan polished into a calmer, smarter work buddy (building on Codex's Focus Plan), inside all existing Focus Plan invariants (no new store/API/payload/chatbot/standing block). The FocusPlanModal When pill now preserves real timing (whenLabel) and only appends the minute estimate as a hint. Reply/follow-up items surface a real send-timing window via the existing deriveSendTimingHint when the contact has a confident inbound band and the current hour is outside it. Owed promises (contact-memory openCommitments of kind promise, honouring dismissedCommitmentIds) are a new plan source ranked just below reply-now and deduped by contact, routed through the existing follow-up handler. The Daily Brief recommendation (buildWorkbenchRecommendation) and Focus Plan (buildFocusPlan) now share one ranking core, collectHeadWorkSignals in leadWorkSignal.ts, so their top item can never disagree. Orchestration was extracted from FloatingAssistant.tsx into the useFocusPlan hook (planner build + action router + promise/badge derivations); the inline 94-line handleFocusPlanItem is gone and the host shrank 3,299 to 3,252 lines. The modal gained Escape/backdrop close, focus-on-open + focus trap, a full-width Start here, larger fonts, and a warm all-caught-up clear state; the action badge still excludes the clear item. Visual follow-up: Focus Plan must open without a blur/dim overlay and without custom Electron panel width; setPanelOpen remains (open: boolean). Restored the documented const shouldShowReferralNudge = false action-count guard that was missing. New EN/ZH focusPlan keys: whenAround, clockTime, timeAm, timePm, promiseTitle, promiseReason. Verified: verify:focus-plan, verify:next-step, verify:contact-continuity, verify:smart-reply, build --workspace=apps/web, electron:build.",
+    "claudeNextPriority": "Manual desktop smoke of the Focus Plan visual polish (no blur/dim overlay, no blank right-side area, When pill timing+estimate, full-width Start here, Esc/backdrop close, done-to-next momentum, warm clear state). Otherwise refine learning loop quality without noisy UI; keep master coordination files current.",
+    "claudeBlockers": "None recorded.",
+    "masterFiles": [
+      "AGENT_STATUS.md",
+      "INTEGRATION_GUIDE.md",
+      "references/SHARED_CONTEXT.json",
+      "plans/codex-current-plan.md",
+      "plans/claude-code-current-plan.md",
+      "projects/active-features.md",
+      "projects/blockers.md",
+      "projects/next-priorities.md"
+    ],
+    "routineClaudeFileEdits": false,
+    "codexUpdateOrder": [
+      "code",
+      "targeted verification",
+      ".codex planning files",
+      "Codex profiles/skills when workflow changed",
+      "master coordination files"
+    ]
+  },
+  "verification": {
+    "lastKnownGood": [
+      "npm run verify:focus-plan --workspace=apps/web",
+      "npm run verify:next-step --workspace=apps/web",
+      "npm run verify:smart-reply --workspace=apps/web",
+      "npm run verify:contact-continuity --workspace=apps/web",
+      "npm run verify:contact-selection --workspace=apps/web",
+      "npm run build --workspace=apps/web",
+      "npm run verify:quality-guard --workspace=apps/web",
+      "npm run verify:smart-suggestions --workspace=apps/web",
+      "npm run verify:compose-coach --workspace=apps/web",
+      "npm run verify:voice-profile-fragment --workspace=apps/api",
+      "npm run verify:cross-language-fragment --workspace=apps/api",
+      "npm run build"
+    ],
+    "notes": "verify:quality-guard and verify:smart-suggestions required approved network escalation because npm needed to fetch tsx from registry.npmmirror.com. Guided Work Buddy v2 (2026-06-07) validated with verify:next-step, verify:smart-reply, verify:contact-continuity, verify:contact-selection, build --workspace=apps/web, verify:quality-guard, and verify:smart-suggestions. FloatingAssistant TARGET row fix (2026-06-08) validated with npm run build --workspace=apps/web; manual desktop smoke still recommended for fade/scroll feel. Focus Plan overlay (2026-06-08) validated with verify:focus-plan, verify:next-step, verify:contact-continuity, verify:smart-reply, and build --workspace=apps/web. Focus Plan polish (2026-06-08 — real timing, owed promises, single recommender core, useFocusPlan hook, modal a11y) validated with verify:focus-plan, verify:next-step, verify:contact-continuity, verify:smart-reply, and build --workspace=apps/web. Focus Plan visual regression fix (2026-06-08 — right-side expanded placement, no blur/dim layer, no custom Electron width, transparent expanded area instead of a blank side panel, internal modal scroll, setPanelOpen typed as open-only, detached child-window routing for open-screen tasks) validated with verify:focus-plan, verify:next-step, build --workspace=apps/web, electron:build, agents:validate, and agents:status; manual desktop smoke still recommended for visual feel. Remembered-context modal regression fix (2026-06-08 — header bell, right-side no-blur icon-anchored popover, no left-edge trigger, no dull blank side surface, larger thread-summary editor) validated with verify:contact-continuity, verify:focus-plan, and build --workspace=apps/web; manual desktop smoke still recommended for final visual/notch feel. Remembered-context height match (2026-06-09 — generated-reply-like 640px popover height, tall 420px summary read/edit panels, no blur/dim behavior preserved) validated with verify:contact-continuity, verify:focus-plan, and build --workspace=apps/web; manual desktop smoke still recommended for final visual feel. Remembered-context edit-mode spacing fix (2026-06-09 — assisted summary editor, no restrictive long-summary cap, visible fixed Cancel/Save footer outside textarea scroll, textarea flexes above footer and input box stretches toward footer) validated with verify:contact-continuity, verify:focus-plan, and build --workspace=apps/web; manual desktop smoke still recommended for final edit feel. Remembered-context badge semantics fix (2026-06-09 — saved/locked summaries stayed reachable from the bell but stopped contributing to the pending badge count) was superseded by the action-only notice rule. Remembered-context notice-icons action-only fix (2026-06-09 — saved/locked summaries and reply-learning stay in local memory but do not mount a notice icon when count is zero) validated with verify:contact-continuity, verify:focus-plan, and build --workspace=apps/web; manual desktop smoke still recommended for final saved-summary feel. More Features drawer close polish (2026-06-09 — drawer closes left from fixed left-[390px] with -translate-x-full, isMoreFeaturesClosing keeps React visual state but no longer keeps the Electron shell fully expanded, and electron/main.ts performs a cancellable non-native 300ms shrink from 574px to 390px to remove the transparent side ghost and native close shake) validated with verify:focus-plan, verify:contact-continuity, build --workspace=apps/web, and electron:build; manual desktop smoke still recommended for final animation feel. Coordination audit (2026-06-09 — direct inspection of FloatingAssistant, More Features, Electron panel close, Codex skills, Claude Code skill mirrors, and plan files; stale Claude-facing continuation guidance updated) validated with agents:validate and agents:status; app runtime verification skipped because no runtime app files changed."
+  }
+}
